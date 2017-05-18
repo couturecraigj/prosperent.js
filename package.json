@@ -36,5 +36,9 @@
   },
   "jest": {
     "rootDir": "./src"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/couturecraigj/prosperent.js.git"
   }
 }
