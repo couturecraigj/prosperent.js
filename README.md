@@ -6,6 +6,9 @@ I created this module because they do not have anything out there to handle node
 ## Purpose
 It is always nice to try and monetize what you have done and people love personalized suggestions.  This is a module to assist with connecting up to _Prosperent_ to get their data back and presenting it to your end users.
 
+## Dependencies
+this is only dependent on `axios` and because of that promises.  I have used a `core-js` polyfill to make sure that Promises are created in environments that are missing them.  Because of the lack of dependencies this should work both in the browser and on `Node.js` though it is not attached to window so you will have to import it and attach it to a global object if you want it available in all contexts.
+
 ## API
 
 ### Simple Usage
