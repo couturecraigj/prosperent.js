@@ -3,12 +3,13 @@ import axios from 'axios'
 import httpAdapter from 'axios/lib/adapters/http'
 import nock from 'nock'
 
+const api_key = '1234'
+const access_key = '1234'
 const host = 'http://api.prosperent.com/api'
 const location = 'http://localhost'
 
 axios.defaults.adapter = httpAdapter
 axios.defaults.host = host
-
 
 test('constructor should throw errors when no API Key or Access Key is given', () => {
   try {
@@ -20,7 +21,7 @@ test('constructor should throw errors when no API Key or Access Key is given', (
 
 test('`usProducts should reject an empty query`', () => {
   try {
-    const p = new Prosperent('123', '123')
+    const p = new Prosperent(api_key, access_key)
     p.usProducts().catch(err => {
       expect(err instanceof Error).toBe(true)
     })
@@ -31,7 +32,7 @@ test('`usProducts should reject an empty query`', () => {
 
 test('`usProducts` should reject an empty object', () => {
   try {
-    const p = new Prosperent('123', '123')
+    const p = new Prosperent(api_key, access_key)
     p.usProducts({}).catch(err => {
       expect(err instanceof Error).toBe(true)
     })
@@ -43,7 +44,7 @@ test('`usProducts` should reject an empty object', () => {
 
 test('`usProducts` should reject any injected `&`', () => {
   try {
-    const p = new Prosperent('123', '123')
+    const p = new Prosperent(api_key, access_key)
     p.usProducts({ query: '&' }).catch(err => {
       expect(err instanceof Error).toBe(true)
     })
@@ -53,30 +54,39 @@ test('`usProducts` should reject any injected `&`', () => {
   }
 })
 
+
+
+// FAILING
 test('`usProducts` return something when at least query is filled', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     location,
     query: 'this'
    })
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
-  await expect(p.usProducts({
-    query: 'this'
-  }).then(({ data }) => data))
+  const p = new Prosperent(api_key, access_key)
+  await expect(
+    p.usProducts({
+      query: 'this'
+    })
+    .catch(console.error)
+    .then(({ data }) => data)
+  )
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
+// FAILING
 test('`usProducts` converts Array to Pipe separated String', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     location,
     filterBrand: 'Canon|Apple'
@@ -84,7 +94,7 @@ test('`usProducts` converts Array to Pipe separated String', async () => {
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     filterBrand: ['Canon', 'Apple']
@@ -92,13 +102,14 @@ test('`usProducts` converts Array to Pipe separated String', async () => {
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
 test('`usProducts` allows you to provide a max on a filter (filterPrice)', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     location,
     filterPrice: ',15.00'
@@ -106,7 +117,7 @@ test('`usProducts` allows you to provide a max on a filter (filterPrice)', async
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     filterPrice: [undefined ,15.00]
@@ -114,13 +125,15 @@ test('`usProducts` allows you to provide a max on a filter (filterPrice)', async
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
+// FAILING
 test('`usProducts` allows you to provide a min on a filter (filterPrice)', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     location,
     filterPrice: '15.00,'
@@ -128,7 +141,7 @@ test('`usProducts` allows you to provide a min on a filter (filterPrice)', async
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     location,
@@ -137,13 +150,14 @@ test('`usProducts` allows you to provide a min on a filter (filterPrice)', async
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
 test('`usProducts` allows you to provide a min and a max on a filter (filterPrice)', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     location,
     filterPrice: '15.00,18.00'
@@ -151,7 +165,7 @@ test('`usProducts` allows you to provide a min and a max on a filter (filterPric
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     filterPrice: [15.00, 18.00]
@@ -159,13 +173,14 @@ test('`usProducts` allows you to provide a min and a max on a filter (filterPric
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
 test('`usProducts` filter to exact price (filterPrice)', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     location,
     filterPrice: '15.00'
@@ -173,7 +188,7 @@ test('`usProducts` filter to exact price (filterPrice)', async () => {
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     filterPrice: [15.00]
@@ -181,21 +196,11 @@ test('`usProducts` filter to exact price (filterPrice)', async () => {
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
 test('`usProducts` `relevancyThreshold` should fail when over 1', async () => {
-  nock(host)
-  .get('/search')
-  .query({ 
-    api_key: 123,
-    query: 'this',
-    location,
-    relevancyThreshold: 2
-   })
-  .reply(200, {
-    this: 'is it'
-  })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     relevancyThreshold: 2
@@ -205,18 +210,7 @@ test('`usProducts` `relevancyThreshold` should fail when over 1', async () => {
 })
 
 test('`usProducts` `relevancyThreshold` should fail when under 0', async () => {
-  nock(host)
-  .get('/search')
-  .query({ 
-    api_key: 123,
-    query: 'this',
-    location,
-    relevancyThreshold: -1
-   })
-  .reply(200, {
-    this: 'is it'
-  })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     relevancyThreshold: 2
@@ -226,10 +220,10 @@ test('`usProducts` `relevancyThreshold` should fail when under 0', async () => {
 })
 
 test('`usProducts` filter to exact price (enableFacets)', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     enableFacets: 'merchant|brand',
     location
@@ -237,7 +231,7 @@ test('`usProducts` filter to exact price (enableFacets)', async () => {
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     enableFacets: ['merchant', 'brand']
@@ -245,13 +239,14 @@ test('`usProducts` filter to exact price (enableFacets)', async () => {
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
 test('`usProducts` pipe all piping values', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     filterBrand: 'merchant|brand',
     filterCatalogId: 'merchant|brand',
@@ -266,7 +261,7 @@ test('`usProducts` pipe all piping values', async () => {
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     filterBrand: ['merchant', 'brand'],
@@ -281,22 +276,11 @@ test('`usProducts` pipe all piping values', async () => {
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  scope.done()
 })
 
 test('`usProducts` prevent non enums with sortBy', async () => {
-  nock(host)
-  .get('/search')
-  .query({ 
-    api_key: 123,
-    query: 'this',
-    filterBrand: 'merchant|brand',
-    sortBy: 'poop',
-    location
-   })
-  .reply(200, {
-    this: 'is it'
-  })
-  const p = new Prosperent('123', '123')
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     sortBy: 'poop'
@@ -307,10 +291,10 @@ test('`usProducts` prevent non enums with sortBy', async () => {
 })
 
 test('`usProducts` allow enums with sortBy', async () => {
-  nock(host)
+  const scope = nock(host)
   .get('/search')
   .query({ 
-    api_key: 123,
+    api_key,
     query: 'this',
     sortBy: 'relevance',
     location
@@ -318,7 +302,10 @@ test('`usProducts` allow enums with sortBy', async () => {
   .reply(200, {
     this: 'is it'
   })
-  const p = new Prosperent('123', '123')
+  // nock.recorder.rec({
+  //   dont_print: true
+  // })
+  const p = new Prosperent(api_key, access_key)
   await expect(p.usProducts({
     query: 'this',
     sortBy: 'relevance'
@@ -326,5 +313,6 @@ test('`usProducts` allow enums with sortBy', async () => {
   .then(({ data }) => data))
   .resolves
   .toEqual({ this: 'is it' })
+  // console.log(nock.recorder.play())
+  scope.done()
 })
-

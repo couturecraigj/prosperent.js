@@ -3,6 +3,14 @@ Prosperent is an affiliate network to make money from visitors
 
 I created this module because they do not have anything out there to handle node.js as most of their stuff is PHP.
 
+## Install
+
+### **TODO**
+
+```shell
+npm i -S prosperent
+```
+
 ## Purpose
 It is always nice to try and monetize what you have done and people love personalized suggestions.  This is a module to assist with connecting up to _Prosperent_ to get their data back and presenting it to your end users.
 
@@ -44,13 +52,13 @@ prosper.usProducts({ query: 'Shoes' })
 * **referrer**: string,
 * **userAgent**: string,
 * **relevancyThreshold**: number, // float
-* **filterBrand**: string, // pipe seperated values
-* **filterCatalogId**: string, // pipe seperated values
-* **filterCategory**: string, // pipe seperated values
-* **filterKeyword**: string, // pipe seperated values
-* **filterKeywords**: string, // pipe seperated values
-* **filterMerchant**: string, // pipe seperated values
-* **filterMerchantId**: string, // pipe seperated values
+* **filterBrand**: string, // pipe separated values
+* **filterCatalogId**: string, // pipe separated values
+* **filterCategory**: string, // pipe separated values
+* **filterKeyword**: string, // pipe separated values
+* **filterKeywords**: string, // pipe separated values
+* **filterMerchant**: string, // pipe separated values
+* **filterMerchantId**: string, // pipe separated values
 * **filterPercentOff**: number, // float or range
 * **filterPremier**: boolean,
 * **filterPrice**: number,  // float or range
@@ -66,7 +74,7 @@ prosper.usProducts({ query: 'Shoes' })
 * **page**: number, // integer
 * **imageSize**: string, // enum
 * **sid**: string,
-* **enableFacets**: boolean | string, // boolean or pipe seperated facet values
+* **enableFacets**: boolean | string, // boolean or pipe separated facet values
 * **enableQuerySuggestion**: boolean,
 * **enableFullData**: boolean,
 * **imageMaskDomain**: string,
