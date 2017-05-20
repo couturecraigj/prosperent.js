@@ -1581,7 +1581,7 @@ function valueInEnum(value, possibleOptions) {
 }
 
 function convertArrayToString(arr) {
-  if (Array.isArray(arr) && arr.length !== 0) return arr.join('|');
+  if (Array.isArray(arr) && arr.length !== 0) return encodeURIComponent(arr.join('|'));
   if (typeof arr === 'boolean') return arr;
   return '';
 }
