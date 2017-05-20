@@ -52,6 +52,9 @@
   "jest": {
     "rootDir": "./src"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/couturecraigj/prosperent.js.git"
