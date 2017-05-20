@@ -1,6 +1,6 @@
 {
   "name": "prosperent",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A module that implements Prosperent Affiliate Network",
   "main": "index.js",
   "scripts": {
