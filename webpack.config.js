@@ -26,19 +26,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            "presets": [
-              [ "es2015", { "modules": false } ],
-              "es2017"
-            ],
-            "plugins": ["transform-flow-strip-types"],
-            "env": {
-              "test": {
-                "plugins": [
-                  "transform-es2015-modules-commonjs",
-                  "transform-flow-strip-types"
-                ]
-              }
-            }
+            presets: ['env'],
           }
         }
       }

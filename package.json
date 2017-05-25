@@ -7,8 +7,7 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "flow": "flow",
-    "build": "webpack",
-    "prepublish": "npm run build"
+    "build": "webpack"
   },
   "keywords": [
     "prosperent",
