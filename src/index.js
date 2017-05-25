@@ -163,7 +163,7 @@ class Prosperent {
     debugMode: false
   }): any {
     if (!options) return Promise.reject(NOTHING_IN_QUERY)
-    if (Object.keys(options).map((v: string): boolean => options[v].includes && options[v].includes('&')).includes(true)) return Promise.reject(SCRIPT_INJECTION_ATTEMPT)
+    if (Object.keys(options).map((v: string): boolean => options[v] && options[v].includes && options[v].includes('&')).includes(true)) return Promise.reject(SCRIPT_INJECTION_ATTEMPT)
     if (Object.keys(options).map((v: any): boolean => !(v)).every((el: boolean): boolean => el === true)) return Promise.reject(NOTHING_IN_QUERY)
 
     let {

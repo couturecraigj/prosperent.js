@@ -8,7 +8,7 @@
     "test:watch": "jest --watchAll",
     "flow": "flow",
     "build": "webpack",
-    "prepublish": "npm run build"
+    "prepublish": "npm install && npm run build"
   },
   "keywords": [
     "prosperent",
@@ -47,8 +47,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "flow-bin": "^0.46.0",
     "jest": "^20.0.3",
-    "nock": "^9.0.13",
-    "webpack": "^2.5.1"
+    "nock": "^9.0.13"
   },
   "jest": {
     "rootDir": "./src"
