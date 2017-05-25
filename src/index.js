@@ -62,10 +62,6 @@ function ifTrue (val: any, result: T): T {
   return val && typeof val !== 'boolean' ? result ? result : val : ''
 }
 
-functionRemoveSpaces () {
-
-}
-
 function yearMonthDateFormatChecker (candidate: string): boolean | string {
   if (dateFormat.test(candidate)) {
     return candidate.match(dateFormat)[0]
