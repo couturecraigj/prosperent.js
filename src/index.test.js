@@ -19,14 +19,12 @@ test('constructor should throw errors when no API Key or Access Key is given', (
   }
 })
 
-test('`usProducts should reject an empty query`', () => {
+test('`usProducts should reject an empty query`', async () => {
+  const p = new Prosperent(api_key, access_key)
   try {
-    const p = new Prosperent(api_key, access_key)
-    p.usProducts().catch(err => {
-      expect(err instanceof Error).toBe(true)
-    })
+    await p.usProducts()
   } catch (e) {
-    expect(e).toBe(null)
+    expect(e instanceof Error).toBe(true)
   }
 })
 
@@ -42,15 +40,13 @@ test('`usProducts` should reject an empty object', () => {
   }
 })
 
-test('`usProducts` should reject any injected `&`', () => {
+test('`usProducts` should reject any injected `&`', async () => {
+  const p = new Prosperent(api_key, access_key)
   try {
-    const p = new Prosperent(api_key, access_key)
-    p.usProducts({ query: '&' }).catch(err => {
-      expect(err instanceof Error).toBe(true)
-    })
-  } catch (e) {
-    console.log(e)
-    expect(e).toBe(null)
+    await p.usProducts({ query: '&' })
+  } catch(e) {
+    expect(e instanceof Error)
+    .toEqual(true)
   }
 })
 

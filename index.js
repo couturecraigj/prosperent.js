@@ -1548,7 +1548,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(['http://api.prosperent.com/api/search?api_key=', '&location=', '&clickMaskDomain=', '&query=', '&imageMaskDomain=', '&filterBrand=', '&filterPrice=', '&filterPriceSale=', '&filterPercentOff=', '&sortBy=', '&groupBy=', '&imageSize=', '&visitor_ip=', '&referrer=', '&userAgent=', '&relevancyThreshold=', '&filterCatalogId=', '&filterCategory=', '&filterKeyword=', '&filterKeywords=', '&filterPremier=', '&filterMerchant=', '&filterMerchantId=', '&filterProductId=', '&maxPrice=', '&minPrice=', '&maxPriceSale=', '&minPriceSale=', '&limit=', '&page=', '&sid=', '&imageSize=', '&enableFacets=', '&enableQuerySuggestion=', '&enableFullData=', '&debugMode=', '&imageMaskDomain=', '&clickMaskDomain=', '&imageSize=', ''], ['http://api.prosperent.com/api/search?api_key=', '&location=', '&clickMaskDomain=', '&query=', '&imageMaskDomain=', '&filterBrand=', '&filterPrice=', '&filterPriceSale=', '&filterPercentOff=', '&sortBy=', '&groupBy=', '&imageSize=', '&visitor_ip=', '&referrer=', '&userAgent=', '&relevancyThreshold=', '&filterCatalogId=', '&filterCategory=', '&filterKeyword=', '&filterKeywords=', '&filterPremier=', '&filterMerchant=', '&filterMerchantId=', '&filterProductId=', '&maxPrice=', '&minPrice=', '&maxPriceSale=', '&minPriceSale=', '&limit=', '&page=', '&sid=', '&imageSize=', '&enableFacets=', '&enableQuerySuggestion=', '&enableFullData=', '&debugMode=', '&imageMaskDomain=', '&clickMaskDomain=', '&imageSize=', '']),
+var _templateObject = _taggedTemplateLiteral(['http://api.prosperent.com/api/search?api_key=', '&location=', '&query=', '&filterBrand=', '&filterPrice=', '&filterPriceSale=', '&filterPercentOff=', '&sortBy=', '&groupBy=', '&imageSize=', '&visitor_ip=', '&referrer=', '&userAgent=', '&relevancyThreshold=', '&filterCatalogId=', '&filterCategory=', '&filterKeyword=', '&filterKeywords=', '&filterPremier=', '&filterMerchant=', '&filterMerchantId=', '&filterProductId=', '&maxPrice=', '&minPrice=', '&maxPriceSale=', '&minPriceSale=', '&limit=', '&page=', '&sid=', '&enableFacets=', '&enableQuerySuggestion=', '&enableFullData=', '&debugMode=', '&imageMaskDomain=', '&clickMaskDomain=', '&imageSize=', ''], ['http://api.prosperent.com/api/search?api_key=', '&location=', '&query=', '&filterBrand=', '&filterPrice=', '&filterPriceSale=', '&filterPercentOff=', '&sortBy=', '&groupBy=', '&imageSize=', '&visitor_ip=', '&referrer=', '&userAgent=', '&relevancyThreshold=', '&filterCatalogId=', '&filterCategory=', '&filterKeyword=', '&filterKeywords=', '&filterPremier=', '&filterMerchant=', '&filterMerchantId=', '&filterProductId=', '&maxPrice=', '&minPrice=', '&maxPriceSale=', '&minPriceSale=', '&limit=', '&page=', '&sid=', '&enableFacets=', '&enableQuerySuggestion=', '&enableFullData=', '&debugMode=', '&imageMaskDomain=', '&clickMaskDomain=', '&imageSize=', '']),
     _templateObject2 = _taggedTemplateLiteral(['http://prosperent.com/api/linkaffiliator/url?apiKey=', '&url=', '&location=', '&referrer=', '&sid=', ''], ['http://prosperent.com/api/linkaffiliator/url?apiKey=', '&url=', '&location=', '&referrer=', '&sid=', '']),
     _templateObject3 = _taggedTemplateLiteral(['http://prosperent.com/api/linkoptimizer/url?apiKey=', '&url=', '&location=', '&referrer=', '&sid=', ''], ['http://prosperent.com/api/linkoptimizer/url?apiKey=', '&url=', '&location=', '&referrer=', '&sid=', '']),
     _templateObject4 = _taggedTemplateLiteral(['http://prosperent.com/api/linkoptimizer/url?apiKey=', '&phrase=', '&location=', '$&referrer=', '&sid=', ''], ['http://prosperent.com/api/linkoptimizer/url?apiKey=', '&phrase=', '&location=', '$&referrer=', '&sid=', '']),
@@ -1600,25 +1600,22 @@ function removeSpacesAndUnusedQueryParams(strings) {
   }
 
   var value = '';
+
   strings.map(function (str, i) {
     value = value + str + (rest[i] ? rest[i] : '');
   });
+  value = value.replace(/(\s|\n|\t)/g, '');
+  var urlRegexp = /((\w+)=(?!\w|,)&?)+/g;
+  value = value.replace(urlRegexp, '');
+  value = value.replace(/&$/g, '');
 
-  var urlRegexp = /(\w+)=(?!\w)&?/g;
-
-  for (var match = urlRegexp.exec(value); match !== null;) {
-    var replace = value.substr(match.index, match[0].length);
-    value = value.replace(replace, "");
-  }
-
-  if (value[value.length - 1] === '&') value = value.substr(0, value.length - 1);
-
-  return value.replace(/(\s|\n|\t)/g, '');
+  return value;
 }
 
 function sortByValidator(candidate, possibleOptions) {
   if (!candidate) return '';
-  if (typeof candidate === 'string' && !valueInEnum(candidate, possibleOptions)) return encodeURIComponent(candidate);
+  if (typeof candidate === 'string' && valueInEnum(candidate, possibleOptions)) return encodeURIComponent(candidate);
+  console.log(candidate);
   if (Array.isArray(candidate)) {
     if (candidate.map(function (opt) {
       return !valueInEnum(opt, possibleOptions);
@@ -1627,16 +1624,23 @@ function sortByValidator(candidate, possibleOptions) {
       return encodeURIComponent(opt);
     }).join('|');
   }
+  return '';
 }
 
 function convertArrayToString(arr) {
-  if (Array.isArray(arr) && arr.length !== 0) return encodeURIComponent(arr.join('|'));
+  if (Array.isArray(arr) && arr.length !== 0) return arr.map(function (v) {
+    return encodeURIComponent(v);
+  }).join('|');
   if (typeof arr === 'boolean') return arr;
   return '';
 }
 
 function ifTrue(val, result) {
-  return val && typeof val !== 'boolean' ? result ? result : val : '';
+  if (val && typeof val !== 'boolean') {
+    if (!result) return val;
+    return result;
+  }
+  return '';
 }
 
 function yearMonthDateFormatChecker(candidate) {
@@ -1691,11 +1695,11 @@ var Prosperent = function () {
 
     if (!apiKey) throw API_KEY_ERROR;
     if (!accessKey) throw ACCESS_KEY_ERROR;
-    this.apiKey = apiKey;
-    this.accessKey = accessKey;
-    this.clickMaskDomain = clickMaskDomain;
-    this.imageMaskDomain = imageMaskDomain;
-    this.location = encodeURIComponent(location);
+    this.apiKey = apiKey || '';
+    this.accessKey = accessKey || '';
+    this.clickMaskDomain = clickMaskDomain || '';
+    this.imageMaskDomain = imageMaskDomain || '';
+    this.location = encodeURIComponent(location) || '';
   }
 
   _createClass(Prosperent, [{
@@ -1722,7 +1726,6 @@ var Prosperent = function () {
       }).every(function (el) {
         return el === true;
       })) return Promise.reject(NOTHING_IN_QUERY);
-
       var query = options.query,
           visitorIp = options.visitorIp,
           referrer = options.referrer,
@@ -1759,14 +1762,16 @@ var Prosperent = function () {
 
       if (referrer) referrer = encodeURIComponent(referrer);
       if (query) query = encodeURIComponent(query);
-      if (imageMaskDomain) imageMaskDomain = encodeURIComponent(imageMaskDomain);
-      if (clickMaskDomain) clickMaskDomain = encodeURIComponent(clickMaskDomain);
+      if (imageMaskDomain || this.imageMaskDomain) imageMaskDomain = encodeURIComponent(imageMaskDomain) || encodeURIComponent(this.imageMaskDomain);
+      if (clickMaskDomain || this.clickMaskDomain) clickMaskDomain = encodeURIComponent(clickMaskDomain) || encodeURIComponent(this.clickMaskDomain);
       if (relevancyThreshold > 1 || relevancyThreshold < 0) return Promise.reject(RELEVANCY_THRESHOLD_ERROR);
-      if (sortByValidator(sortBy, ['relevance', 'keyword', 'brand', 'merchant', 'merchantId', 'merchantId', 'price', 'price_sale', 'minPrice', 'maxPrice', 'minPriceSale', 'maxPriceSale', 'percentOff', 'groupCount']) === false) return Promise.reject(VALUE_NOT_IN_ENUM);else sortBy = sortByValidator(sortBy, ['relevance', 'keyword', 'brand', 'merchant', 'merchantId', 'merchantId', 'price', 'price_sale', 'minPrice', 'maxPrice', 'minPriceSale', 'maxPriceSale', 'percentOff', 'groupCount']);
+      if (sortBy && !sortByValidator(sortBy, ['relevance', 'keyword', 'brand', 'merchant', 'merchantId', 'merchantId', 'price', 'price_sale', 'minPrice', 'maxPrice', 'minPriceSale', 'maxPriceSale', 'percentOff', 'groupCount'])) return Promise.reject(VALUE_NOT_IN_ENUM);else sortBy = sortByValidator(sortBy, ['relevance', 'keyword', 'brand', 'merchant', 'merchantId', 'merchantId', 'price', 'price_sale', 'minPrice', 'maxPrice', 'minPriceSale', 'maxPriceSale', 'percentOff', 'groupCount']);
       if (!valueInEnum(sortBy, ['relevance', 'keyword', 'brand', 'merchant', 'merchantId', 'merchantId', 'price', 'price_sale', 'minPrice', 'maxPrice', 'minPriceSale', 'maxPriceSale', 'percentOff', 'groupCount'])) return Promise.reject(VALUE_NOT_IN_ENUM);
       if (!valueInEnum(groupBy, ['brand', 'category', 'brand', 'merchant', 'merchantId', 'productId'])) return Promise.reject(VALUE_NOT_IN_ENUM);
       if (!valueInEnum(imageSize, ['75x75', '125x125', '250x250', '500x500'])) return Promise.reject(VALUE_NOT_IN_ENUM);
-      return _axios2.default.get(removeSpacesAndUnusedQueryParams(_templateObject, this.apiKey, this.location, ifTrue(this.clickMaskDomain), ifTrue(query), ifTrue(this.imageMaskDomain), ifTrue(convertArrayToString(filterBrand)), ifTrue(floatOrRange(filterPrice)), ifTrue(floatOrRange(filterPriceSale)), ifTrue(floatOrRange(filterPercentOff)), ifTrue(sortBy), ifTrue(groupBy), ifTrue(imageSize), ifTrue(visitorIp), ifTrue(referrer), ifTrue(userAgent), ifTrue(relevancyThreshold), ifTrue(convertArrayToString(filterCatalogId)), ifTrue(convertArrayToString(filterCategory)), ifTrue(convertArrayToString(filterKeyword)), ifTrue(convertArrayToString(filterKeywords)), ifTrue(filterPremier), ifTrue(convertArrayToString(filterMerchant)), ifTrue(convertArrayToString(filterMerchantId)), ifTrue(convertArrayToString(filterProductId)), ifTrue(toFixedNumber(maxPrice)), ifTrue(toFixedNumber(minPrice)), ifTrue(toFixedNumber(maxPriceSale)), ifTrue(toFixedNumber(minPriceSale)), ifTrue(limit), ifTrue(page), ifTrue(sid), ifTrue(imageSize), ifTrue(convertArrayToString(enableFacets)), ifTrue(enableQuerySuggestion), ifTrue(enableFullData), ifTrue(debugMode), ifTrue(imageMaskDomain), ifTrue(clickMaskDomain), ifTrue(imageSize)), {
+      var urlAddress = removeSpacesAndUnusedQueryParams(_templateObject, this.apiKey, this.location, ifTrue(query), ifTrue(convertArrayToString(filterBrand)), ifTrue(floatOrRange(filterPrice)), ifTrue(floatOrRange(filterPriceSale)), ifTrue(floatOrRange(filterPercentOff)), ifTrue(sortBy), ifTrue(groupBy), ifTrue(imageSize), ifTrue(visitorIp), ifTrue(referrer), ifTrue(userAgent), ifTrue(relevancyThreshold), ifTrue(convertArrayToString(filterCatalogId)), ifTrue(convertArrayToString(filterCategory)), ifTrue(convertArrayToString(filterKeyword)), ifTrue(convertArrayToString(filterKeywords)), ifTrue(filterPremier), ifTrue(convertArrayToString(filterMerchant)), ifTrue(convertArrayToString(filterMerchantId)), ifTrue(convertArrayToString(filterProductId)), ifTrue(toFixedNumber(maxPrice)), ifTrue(toFixedNumber(minPrice)), ifTrue(toFixedNumber(maxPriceSale)), ifTrue(toFixedNumber(minPriceSale)), ifTrue(limit), ifTrue(page), ifTrue(sid), ifTrue(convertArrayToString(enableFacets)), ifTrue(enableQuerySuggestion), ifTrue(enableFullData), ifTrue(debugMode), ifTrue(imageMaskDomain), ifTrue(clickMaskDomain), ifTrue(imageSize));
+      // return Promise.reject(urlAddress)
+      return _axios2.default.get(removeSpacesAndUnusedQueryParams(_templateObject, this.apiKey, this.location, ifTrue(query), ifTrue(convertArrayToString(filterBrand)), ifTrue(floatOrRange(filterPrice)), ifTrue(floatOrRange(filterPriceSale)), ifTrue(floatOrRange(filterPercentOff)), ifTrue(sortBy), ifTrue(groupBy), ifTrue(imageSize), ifTrue(visitorIp), ifTrue(referrer), ifTrue(userAgent), ifTrue(relevancyThreshold), ifTrue(convertArrayToString(filterCatalogId)), ifTrue(convertArrayToString(filterCategory)), ifTrue(convertArrayToString(filterKeyword)), ifTrue(convertArrayToString(filterKeywords)), ifTrue(filterPremier), ifTrue(convertArrayToString(filterMerchant)), ifTrue(convertArrayToString(filterMerchantId)), ifTrue(convertArrayToString(filterProductId)), ifTrue(toFixedNumber(maxPrice)), ifTrue(toFixedNumber(minPrice)), ifTrue(toFixedNumber(maxPriceSale)), ifTrue(toFixedNumber(minPriceSale)), ifTrue(limit), ifTrue(page), ifTrue(sid), ifTrue(convertArrayToString(enableFacets)), ifTrue(enableQuerySuggestion), ifTrue(enableFullData), ifTrue(debugMode), ifTrue(imageMaskDomain), ifTrue(clickMaskDomain), ifTrue(imageSize)), {
         // headers: {
         //   'Content-type': 'application/x-www-form-urlencoded'
         // },

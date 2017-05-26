@@ -27,39 +27,41 @@ function valueInEnum (value: T, possibleOptions: Array<T>): boolean {
 
 function removeSpacesAndUnusedQueryParams (strings, ...rest) {
   let value = ''
+  
   strings.map((str, i) => {
     value = value + str + (rest[i] ? rest[i] : '')
   })
+  value = value.replace(/(\s|\n|\t)/g, '')
+  var urlRegexp = /((\w+)=(?!\w|,)&?)+/g
+  value = value.replace(urlRegexp, '')
+  value = value.replace(/&$/g, '')
   
-  var urlRegexp = /(\w+)=(?!\w)&?/g
-
-  for (const match = urlRegexp.exec(value); match !== null;) {
-    const replace = value.substr(match.index, match[0].length)
-    value = value.replace(replace, "")
-  }
-
-  if (value[value.length - 1] === '&') value = value.substr(0, value.length - 1)
-  
-  return value.replace(/(\s|\n|\t)/g, '')
+  return value
 }
 
 function sortByValidator (candidate: ?(string | Array<string>), possibleOptions: Array<string>): string | boolean {
   if (!candidate) return ''
-  if (typeof candidate === 'string' && !valueInEnum(candidate, possibleOptions)) return encodeURIComponent(candidate)
+  if (typeof candidate === 'string' && valueInEnum(candidate, possibleOptions)) return encodeURIComponent(candidate)
+  console.log(candidate)
   if (Array.isArray(candidate)) {
     if (candidate.map((opt: string): string => !valueInEnum(opt, possibleOptions)).includes(false)) return false
     return candidate.map((opt: string): string => encodeURIComponent(opt)).join('|')
   }
+  return ''
 }
 
 function convertArrayToString (arr: Array<string>): string {
-  if (Array.isArray(arr) && arr.length !== 0) return encodeURIComponent(arr.join('|'))
+  if (Array.isArray(arr) && arr.length !== 0) return arr.map(v => encodeURIComponent(v)).join('|')
   if (typeof arr === 'boolean') return arr
   return ''
 }
 
 function ifTrue (val: any, result: T): T {
-  return val && typeof val !== 'boolean' ? result ? result : val : ''
+  if (val && typeof val !== 'boolean') {
+    if (!result) return val
+    return result
+  } 
+  return ''
 }
 
 function yearMonthDateFormatChecker (candidate: string): boolean | string {
@@ -107,11 +109,11 @@ class Prosperent {
   constructor (apiKey: string, accessKey: string, { clickMaskDomain, imageMaskDomain, location }: { location: string } = { location: 'http://localhost' }) {
     if (!apiKey) throw API_KEY_ERROR
     if (!accessKey) throw ACCESS_KEY_ERROR
-    this.apiKey = apiKey
-    this.accessKey = accessKey
-    this.clickMaskDomain = clickMaskDomain
-    this.imageMaskDomain = imageMaskDomain
-    this.location = encodeURIComponent(location)
+    this.apiKey = apiKey || ''
+    this.accessKey = accessKey || ''
+    this.clickMaskDomain = clickMaskDomain || ''
+    this.imageMaskDomain = imageMaskDomain || ''
+    this.location = encodeURIComponent(location) || ''
   }
   usProducts (options: {
     query: string,
@@ -161,7 +163,6 @@ class Prosperent {
     if (!options) return Promise.reject(NOTHING_IN_QUERY)
     if (Object.keys(options).map((v: string): boolean => options[v] && options[v].includes && options[v].includes('&')).includes(true)) return Promise.reject(SCRIPT_INJECTION_ATTEMPT)
     if (Object.keys(options).map((v: any): boolean => !(v)).every((el: boolean): boolean => el === true)) return Promise.reject(NOTHING_IN_QUERY)
-
     let {
       query,
       visitorIp,
@@ -199,10 +200,10 @@ class Prosperent {
     } = options
     if (referrer) referrer = encodeURIComponent(referrer)
     if (query) query = encodeURIComponent(query)
-    if (imageMaskDomain) imageMaskDomain = encodeURIComponent(imageMaskDomain)
-    if (clickMaskDomain) clickMaskDomain = encodeURIComponent(clickMaskDomain)
+    if (imageMaskDomain || this.imageMaskDomain) imageMaskDomain = encodeURIComponent(imageMaskDomain) || encodeURIComponent(this.imageMaskDomain)
+    if (clickMaskDomain || this.clickMaskDomain) clickMaskDomain = encodeURIComponent(clickMaskDomain) || encodeURIComponent(this.clickMaskDomain)
     if (relevancyThreshold > 1 || relevancyThreshold < 0) return Promise.reject(RELEVANCY_THRESHOLD_ERROR)
-    if (sortByValidator(sortBy, [
+  if (sortBy && !sortByValidator(sortBy, [
       'relevance',
       'keyword',
       'brand',
@@ -217,7 +218,7 @@ class Prosperent {
       'maxPriceSale',
       'percentOff',
       'groupCount'
-    ]) === false) return Promise.reject(VALUE_NOT_IN_ENUM)
+    ])) return Promise.reject(VALUE_NOT_IN_ENUM)
     else sortBy = sortByValidator(sortBy, [
       'relevance',
       'keyword',
@@ -264,16 +265,12 @@ class Prosperent {
       '250x250',
       '500x500'
     ])) return Promise.reject(VALUE_NOT_IN_ENUM)
-    return axios.get(removeSpacesAndUnusedQueryParams`http://api.prosperent.com/api/search?api_key=${
+    const urlAddress = removeSpacesAndUnusedQueryParams`http://api.prosperent.com/api/search?api_key=${
       this.apiKey
     }&location=${
       this.location
-    }&clickMaskDomain=${
-      ifTrue(this.clickMaskDomain)
     }&query=${
       ifTrue(query)
-    }&imageMaskDomain=${
-      ifTrue(this.imageMaskDomain)
     }&filterBrand=${
       ifTrue(convertArrayToString(filterBrand))
     }&filterPrice=${
@@ -326,8 +323,80 @@ class Prosperent {
       ifTrue(page)
     }&sid=${
       ifTrue(sid)
+    }&enableFacets=${
+      ifTrue(convertArrayToString(enableFacets))
+    }&enableQuerySuggestion=${
+      ifTrue(enableQuerySuggestion)
+    }&enableFullData=${
+      ifTrue(enableFullData)
+    }&debugMode=${
+      ifTrue(debugMode)
+    }&imageMaskDomain=${
+      ifTrue(imageMaskDomain)
+    }&clickMaskDomain=${
+      ifTrue(clickMaskDomain)
     }&imageSize=${
       ifTrue(imageSize)
+    }`
+    // return Promise.reject(urlAddress)
+    return axios.get(removeSpacesAndUnusedQueryParams`http://api.prosperent.com/api/search?api_key=${
+      this.apiKey
+    }&location=${
+      this.location
+    }&query=${
+      ifTrue(query)
+    }&filterBrand=${
+      ifTrue(convertArrayToString(filterBrand))
+    }&filterPrice=${
+      ifTrue(floatOrRange(filterPrice))
+    }&filterPriceSale=${
+      ifTrue(floatOrRange(filterPriceSale))
+    }&filterPercentOff=${
+      ifTrue(floatOrRange(filterPercentOff))
+    }&sortBy=${
+      ifTrue(sortBy)
+    }&groupBy=${
+      ifTrue(groupBy)
+    }&imageSize=${
+      ifTrue(imageSize)
+    }&visitor_ip=${
+      ifTrue(visitorIp)
+    }&referrer=${
+      ifTrue(referrer)
+    }&userAgent=${
+      ifTrue(userAgent)
+    }&relevancyThreshold=${
+      ifTrue(relevancyThreshold)
+    }&filterCatalogId=${
+      ifTrue(convertArrayToString(filterCatalogId))
+    }&filterCategory=${
+      ifTrue(convertArrayToString(filterCategory))
+    }&filterKeyword=${
+      ifTrue(convertArrayToString(filterKeyword))
+    }&filterKeywords=${
+      ifTrue(convertArrayToString(filterKeywords))
+    }&filterPremier=${
+      ifTrue(filterPremier)
+    }&filterMerchant=${
+      ifTrue(convertArrayToString(filterMerchant))
+    }&filterMerchantId=${
+      ifTrue(convertArrayToString(filterMerchantId))
+    }&filterProductId=${
+      ifTrue(convertArrayToString(filterProductId))
+    }&maxPrice=${
+      ifTrue(toFixedNumber(maxPrice))
+    }&minPrice=${
+      ifTrue(toFixedNumber(minPrice))
+    }&maxPriceSale=${
+      ifTrue(toFixedNumber(maxPriceSale))
+    }&minPriceSale=${
+      ifTrue(toFixedNumber(minPriceSale))
+    }&limit=${
+      ifTrue(limit)
+    }&page=${
+      ifTrue(page)
+    }&sid=${
+      ifTrue(sid)
     }&enableFacets=${
       ifTrue(convertArrayToString(enableFacets))
     }&enableQuerySuggestion=${
